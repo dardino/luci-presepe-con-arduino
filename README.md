@@ -7,6 +7,8 @@ gestione luci del presepe con arduino
 - gestione luci led rgb
 - gestione luci led per le stelle
 - gestione relé per luci case
+- fade per stelle
+- fade per le transizioni rgb
 
 
 [per usare Visual Studio Code](https://medium.com/home-wireless/use-visual-studio-code-for-arduino-2d0cf4c1760b)
