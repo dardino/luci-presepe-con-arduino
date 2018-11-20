@@ -44,8 +44,8 @@ const char *imagefile = "/albero.jpg";
 const char *htmlfile = "/index.html";
 
 /* Set these to your desired credentials. */
-const char *ssid = "FamBrunAgoWIFI";
-const char *password = "KeyWpaBrunAgo23";
+const char *ssid = "xxx";
+const char *password = "xxx";
 String tree_state = "off";
 ESP8266WebServer server(80);
 
