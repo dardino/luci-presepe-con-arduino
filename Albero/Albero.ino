@@ -26,6 +26,9 @@
    ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   
+   // URL per recuperare l'ora:
+   http://iot-gb.azurewebsites.net/timeinfo/city/rome
 */
 
 /* Create a WiFi access point and provide a web server on it. */
