@@ -27,42 +27,64 @@ const EasingFunctions = {
     easeInOutQuint: function (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
 }
 
+interface IHSLColor {
+    h: number;
+    s: number;
+    l: number;
+}
+
+interface IPoint2D {
+    x: number;
+    y: number;
+}
+
+interface IColoredPoint2D extends IPoint2D {
+    fill: string;
+}
+
+interface ISun extends IPoint2D {
+    strength: number;
+}
+
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d')!;
 
-const nightColor = { h: 0, s: 0, l: 0 };
-const sunriseColor = { h: 359, s: 66, l: 76 };
-const midDayColor = { h: 359, s: 0, l: 100 };
-const sunsetColor = { h: 360, s: 90, l: 43 };
+const nightColor: IHSLColor = { h: 0, s: 0, l: 0 };
+const sunriseColor: IHSLColor = { h: 359, s: 66, l: 76 };
+const midDayColor: IHSLColor = { h: 359, s: 0, l: 100 };
+const sunsetColor: IHSLColor = { h: 360, s: 90, l: 43 };
 
-const maxDistance = getDistanceBetweenTwoPoints({ x: 0, y: 150 }, { x: 1640, y: 50});
+const minutesInADay = 1840;
+const referenceHeight = 150;
+
+const maxDistance = getDistanceBetweenTwoPoints({ x: 0, y: referenceHeight }, { x: minutesInADay, y: referenceHeight / 3 });
 
 window.requestAnimationFrame(draw);
 
 let titty = 0;
 
-let ledArray = new Array(94).fill(0).map((x, i) => ({ x: i * 8 + 550, y: 50, fill: `hsl(360, 0%, 0%)` }));
+let ledArray = new Array(94).fill(0).map<IColoredPoint2D>((x, i) => ({ x: i * 8 + 550, y: referenceHeight / 3, fill: `hsl(360, 0%, 0%)` }));
 
 function draw() {
     const t = titty++;
-    const sun = getSunPosition(t);
+    const sun: ISun = getSunPosition(t);
     sun.strength = getNormalizedSunStrength(sun);
 
-    ctx.clearRect(0, 0, 1840, 150);
+    ctx.clearRect(0, 0, minutesInADay, referenceHeight);
     ctx.fillStyle = 'darkblue';
-    ctx.fillRect(0, 0, 1840, 150);
+    ctx.fillRect(0, 0, minutesInADay, referenceHeight);
     drawSun(sun);
     ledArray = computeLedArray(ledArray, sun);
     drawLeds(ledArray);
 
-    if (titty > 1840) {
+    if (titty > minutesInADay) {
         titty = 0;
     }
     window.requestAnimationFrame(draw);
 }
 
-function drawLeds(leds) {
-    const h = 50;
+function drawLeds(leds: IColoredPoint2D[]) {
+    const h = referenceHeight / 3;
 
     leds.forEach(led => {
         ctx.beginPath();
@@ -73,7 +95,7 @@ function drawLeds(leds) {
     });
 }
 
-function drawSun(sun) {
+function drawSun(sun: ISun) {
     ctx.beginPath();
     ctx.fillStyle = 'red';
     ctx.arc(sun.x, sun.y, 10, 0, 2*Math.PI);
@@ -81,13 +103,13 @@ function drawSun(sun) {
     ctx.closePath();
 }
 
-function getDistanceBetweenTwoPoints(a, b) {
+function getDistanceBetweenTwoPoints(a: IPoint2D, b: IPoint2D) {
     const pit = Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2);
 
     return Math.sqrt(pit);
 }
 
-function getSunPosition(t) {
+function getSunPosition(t: number) {
 
     const x = t; // <-- to parametrize
 
@@ -96,7 +118,7 @@ function getSunPosition(t) {
     return { x, y, strength: 0 };
 }
 
-function normalizeSunX(x) {
+function normalizeSunX(x: number) {
     const min = 0;
     const max = canvas.getBoundingClientRect().width;
 
@@ -106,26 +128,26 @@ function normalizeSunX(x) {
     return translated / diff;
 }
 
-function getSunY(t) {
-    return EasingFunctions.easeInOutQuad(Math.abs((t - 0.5) * 2)) * 150;
+function getSunY(t: number) {
+    return EasingFunctions.easeInOutQuad(Math.abs((t - 0.5) * 2)) * referenceHeight;
 }
 
-function getNormalizedSunStrength(sun) {
-    const t = 1 - Math.min(100, sun.y) / 100;
+function getNormalizedSunStrength(sun: ISun) {
+    const t = 1 - Math.min(referenceHeight * 2 / 3, sun.y) / (referenceHeight * 2 / 3);
 
     const pow = Math.min(t * 2, 1.5);
     console.log(pow);
     return pow;
 }
 
-function computeLedArray(leds, sun) {
+function computeLedArray(leds: IColoredPoint2D[], sun: ISun) {
     return leds.map(led => {
         return { x: led.x, y: led.y, fill: getHslLedColor(led, sun) };
     })
 }
 
 
-function getHslLedColor(led, sun): string {
+function getHslLedColor(led: IColoredPoint2D, sun: ISun): string {
     const dist = Math.abs(getDistanceBetweenTwoPoints(sun, led));
     const invertedDist = ((dist / maxDistance));
 
