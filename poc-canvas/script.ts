@@ -118,7 +118,7 @@ function drawLeds(leds: IColoredPoint2D[]) {
 
 function drawSun(sun: ISun, sunColor: IHSLColor) {
     ctx.beginPath();
-    ctx.fillStyle = `hsl(${sunColor.h},${sunColor.s}%,${sunColor.l}%)`;
+    ctx.fillStyle = toHslString(sunColor);
     ctx.arc(sun.x, sun.y, 10, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
